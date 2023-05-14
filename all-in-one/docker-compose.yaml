@@ -1,0 +1,71 @@
+
+services:
+  client:
+    image: spv99build/dedotrader-client:latest
+    container_name: client
+    labels:
+      - sh.acme.autoload.domain=${WEB_CLIENT_DOMAIN}
+    environment:
+      - NX_SERVER_API_URL=http://${WEB_CLIENT_DOMAIN}
+      - DEBUG=${DEBUG}
+
+  acme.sh:
+    image: neilpang/acme.sh
+    container_name: acme.sh
+    command: daemon
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DEPLOY_DOCKER_CONTAINER_LABEL="sh.acme.autoload.domain=${WEB_CLIENT_DOMAIN}"
+      - DEPLOY_DOCKER_CONTAINER_KEY_FILE="/opt/app/ssl/key.pem"
+      - DEPLOY_DOCKER_CONTAINER_CERT_FILE="/opt/app/ssl/cert.pem"
+      - DEPLOY_DOCKER_CONTAINER_CA_FILE="/opt/app/ssl/ca.pem"
+      - DEPLOY_DOCKER_CONTAINER_FULLCHAIN_FILE="/opt/app/ssl/full.pem"
+      - DEPLOY_DOCKER_CONTAINER_RELOAD_CMD="service nginx force-reload"
+
+  backend:
+    restart: always
+    image: spv99build/dedotrader:latest
+    environment:
+      - LOG_VERBOSE_LEVEL=debug
+      - PORT=3000
+      - MONGODB_URL=mongodb://mongo:27017/dedotrader
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_APP_URL=http://${WEB_CLIENT_DOMAIN}
+      - JWT_SECRET=${JWT_SECRET}
+      - KEY_SECRET=${KEY_SECRET}
+      - SUPERADMIN_USERNAME=${SUPERADMIN_USER}
+      - DEBUG=${DEBUG}
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - backend-net
+      - client-backend
+    expose:
+      - 3000
+
+  redis:
+    restart: always
+    image: redis:7
+    networks:
+      - backend-net
+    expose:
+      - 6379
+
+  mongo:
+    restart: always
+    image: mongo:6.0.5
+    volumes:
+      - type: volume
+        source: mongo-data
+        target: /data/db
+    networks:
+      - backend-net
+    expose:
+      - 27017
+networks:
+  client-backend:
+  backend-net:
+volumes:
+  mongo-data:
