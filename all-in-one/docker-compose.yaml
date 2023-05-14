@@ -1,44 +1,37 @@
 
 services:
   client:
-    image: spv99build/dedotrader-client:latest
     container_name: client
+    restart: always
+    image: spv99build/dedotrader-client:latest
+    depends_on:
+      - backend
     labels:
-      - sh.acme.autoload.domain=${WEB_CLIENT_DOMAIN}
+      - sh.acme.autoload.domain=${DEDOTRADER_DOMAIN}
     environment:
-      - NX_SERVER_API_URL=http://${WEB_CLIENT_DOMAIN}
+      - VIRTUAL_HOST=${DEDOTRADER_DOMAIN}
+      - ENABLE_ACME=true
+      - NX_SERVER_API_URL=http://${DEDOTRADER_DOMAIN}:3000
       - DEBUG=${DEBUG}
     ports:
       - 80:80
-      - 443:443
     networks:
-      - client-backend
+      - proxy
 
-  acme.sh:
-    image: neilpang/acme.sh
-    container_name: acme.sh
-    command: daemon
-    volumes:
-      - /opt/acmeout:/acme.sh
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - DEPLOY_DOCKER_CONTAINER_LABEL="sh.acme.autoload.domain=${WEB_CLIENT_DOMAIN}"
-      - DEPLOY_DOCKER_CONTAINER_KEY_FILE="/opt/app/ssl/key.pem"
-      - DEPLOY_DOCKER_CONTAINER_CERT_FILE="/opt/app/ssl/cert.pem"
-      - DEPLOY_DOCKER_CONTAINER_CA_FILE="/opt/app/ssl/ca.pem"
-      - DEPLOY_DOCKER_CONTAINER_FULLCHAIN_FILE="/opt/app/ssl/full.pem"
-      - DEPLOY_DOCKER_CONTAINER_RELOAD_CMD="service nginx force-reload"
 
   backend:
     container_name: backend
     restart: always
     image: spv99build/dedotrader:latest
     environment:
+      - VIRTUAL_HOST=api.${DEDOTRADER_DOMAIN}
+      - VIRTUAL_PORT=3000
+      - ENABLE_ACME=true
       - LOG_VERBOSE_LEVEL=debug
       - PORT=3000
       - MONGODB_URL=mongodb://mongo:27017/dedotrader
       - REDIS_URL=redis://redis:6379
-      - CLIENT_APP_URL=http://${WEB_CLIENT_DOMAIN}
+      - CLIENT_APP_URL=http://${DEDOTRADER_DOMAIN}
       - JWT_SECRET=${JWT_SECRET}
       - KEY_SECRET=${KEY_SECRET}
       - SUPERADMIN_USERNAME=${SUPERADMIN_USER}
@@ -47,8 +40,8 @@ services:
       - mongo
       - redis
     networks:
-      - backend-net
-      - client-backend
+      - dedotrader
+      - proxy
     ports:
       - 3000:3000
 
@@ -57,7 +50,7 @@ services:
     restart: always
     image: redis:7
     networks:
-      - backend-net
+      - dedotrader
     expose:
       - 6379
 
@@ -70,13 +63,14 @@ services:
         source: mongo-data
         target: /data/db
     networks:
-      - backend-net
+      - dedotrader
     expose:
       - 27017
 
 networks:
-  client-backend:
-  backend-net:
+  dedotrader:
+  proxy:
+    name: proxy
 
 volumes:
   mongo-data:
