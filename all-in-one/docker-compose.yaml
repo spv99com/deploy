@@ -8,12 +8,18 @@ services:
     environment:
       - NX_SERVER_API_URL=http://${WEB_CLIENT_DOMAIN}
       - DEBUG=${DEBUG}
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - client-backend
 
   acme.sh:
     image: neilpang/acme.sh
     container_name: acme.sh
     command: daemon
     volumes:
+      - /opt/acmeout:/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DEPLOY_DOCKER_CONTAINER_LABEL="sh.acme.autoload.domain=${WEB_CLIENT_DOMAIN}"
@@ -24,6 +30,7 @@ services:
       - DEPLOY_DOCKER_CONTAINER_RELOAD_CMD="service nginx force-reload"
 
   backend:
+    container_name: backend
     restart: always
     image: spv99build/dedotrader:latest
     environment:
@@ -42,10 +49,11 @@ services:
     networks:
       - backend-net
       - client-backend
-    expose:
-      - 3000
+    ports:
+      - 3000:3000
 
   redis:
+    container_name: redis
     restart: always
     image: redis:7
     networks:
@@ -54,6 +62,7 @@ services:
       - 6379
 
   mongo:
+    container_name: mongo
     restart: always
     image: mongo:6.0.5
     volumes:
@@ -64,8 +73,10 @@ services:
       - backend-net
     expose:
       - 27017
+
 networks:
   client-backend:
   backend-net:
+
 volumes:
   mongo-data:

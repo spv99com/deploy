@@ -1,0 +1,1 @@
+sudo tail -f `sudo docker inspect --format='{{.LogPath}}' server`
