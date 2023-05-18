@@ -1,7 +1,7 @@
 version: '3.9'
 
 env_file:
-  - ./dodotrader.env
+  - ./compose-dodotrader.env
 
 services:
   backend:
