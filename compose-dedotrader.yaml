@@ -1,0 +1,90 @@
+version: '3.9'
+
+env_file:
+  - ./dodotrader.env
+
+services:
+  backend:
+    restart: always
+    image: spv99build/dedotrader:latest
+    environment:
+      - VIRTUAL_HOST=api.${DEDOTRADER_DOMAIN}
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=api.${DEDOTRADER_DOMAIN}
+      - LOG_VERBOSE_LEVEL=debug
+      - PORT=3000
+      - MONGODB_URL=mongodb://mongo:27017/dedotrader
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_APP_URL=https://${DEDOTRADER_DOMAIN}
+      - JWT_SECRET=${JWT_SECRET}
+      - KEY_SECRET=${KEY_SECRET}
+      - SUPERADMIN_USERNAME=${SUPERADMIN_USER}
+      - DEBUG=${DEBUG}
+      - ADMIN_EMAIL=app+dedotrader@spv99.com
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=eu-central-1
+      - MAIL_FROM=app+dedotrader@spv99.com
+      - MAIL_BCC=app+dedotrader@spv99.com
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - dedotrader
+      - proxy-net
+    expose:
+      - 3000
+
+  frontend:
+    restart: always
+    image: spv99build/dedotrader-client:latest
+    depends_on:
+      - backend
+    environment:
+      - VIRTUAL_HOST=${DEDOTRADER_DOMAIN}
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=${DEDOTRADER_DOMAIN}
+      - NX_SERVER_API_URL=https://api.${DEDOTRADER_DOMAIN}
+      - DEBUG=${DEBUG}
+    expose:
+      - 80
+    networks:
+      - proxy-net
+
+  redis:
+    restart: always
+    image: redis:7
+    networks:
+      dedotrader:
+        aliases:
+          - redis
+
+    expose:
+      - 6379
+    ports:
+      - 6379:6379 # used only for debug purpose, not needed for anything else
+
+  mongo:
+    restart: always
+    image: mongo:6.0.5
+    volumes:
+      - type: volume
+        source: mongo-data
+        target: /data/db
+    networks:
+      dedotrader:
+        aliases:
+          - mongo
+    expose:
+      - 27017
+    ports:
+      - 27017:27017 # used only for debug purpose, not needed for anything else
+
+networks:
+  dedotrader:
+  proxy-net:
+    name: proxy-net
+    external: true
+
+volumes:
+  mongo-data:    

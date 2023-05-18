@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  proxy:
+    container_name: proxy
+    image: nginxproxy/nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+    environment:
+      - TRUST_DOWNSTREAM_PROXY=false #true if there is another proxy in front of this one
+    networks:
+      - proxy-net
+
+  acme:
+    image: nginxproxy/acme-companion
+    volumes:
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+    environment:
+      - DEFAULT_EMAIL=admin@spv99.com #email to receive notifications from letsencrypt.org
+      - NGINX_PROXY_CONTAINER=proxy #name of nginx-proxy container
+
+networks:
+  proxy-net:
+    name: proxy-net
+    external: true
+
+volumes:
+  certs:
+  vhost:
+  html:
+  acme:      
