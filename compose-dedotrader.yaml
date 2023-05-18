@@ -1,8 +1,5 @@
 version: '3.9'
 
-env_file:
-  - ./compose-dodotrader.env
-
 services:
   backend:
     restart: always
@@ -87,4 +84,4 @@ networks:
     external: true
 
 volumes:
-  mongo-data:    
+  mongo-data:
