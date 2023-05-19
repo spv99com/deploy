@@ -1,4 +1,5 @@
 version: '3.9'
+name: dedotrader
 
 services:
   backend:
@@ -17,12 +18,12 @@ services:
       - KEY_SECRET=${KEY_SECRET}
       - SUPERADMIN_USERNAME=${SUPERADMIN_USER}
       - DEBUG=${DEBUG}
-      - ADMIN_EMAIL=app+dedotrader@spv99.com
+      - ADMIN_EMAIL=${EMAIL_SERVICE_ADMIN}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=eu-central-1
-      - MAIL_FROM=app+dedotrader@spv99.com
-      - MAIL_BCC=app+dedotrader@spv99.com
+      - MAIL_FROM=${EMAIL_FROM}
+      - MAIL_BCC=${EMAIL_BCC}
     depends_on:
       - mongo
       - redis

@@ -1,2 +1,0 @@
-#!/bin/sh
-sudo docker compose -f compose-proxy.yaml -f compose-dedotrader.yaml up -d
