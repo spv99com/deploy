@@ -1,7 +1,27 @@
-version: '3.9'
+version: "3.9"
 name: dedotrader
 
 services:
+  datafeed:
+    restart: always
+    image: spv99build/dedotrader-datafeed:latest
+    environment:
+      - LOG_LEVEL=debug
+      - LOG_FOLDER=/var/log/dedotrader
+      - PORT=3000
+      - MONGODB_URL=mongodb://mongo:27017/dedotrader
+      - REDIS_URL=redis://redis:6379/2
+      - DEBUG=${DEBUG}
+    volumes:
+      - /opt/dedotrader/datafeed:/var/log/dedotrader
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - dedotrader
+    expose:
+      - 3000
+
   backend:
     restart: always
     image: spv99build/dedotrader:latest
@@ -9,7 +29,8 @@ services:
       - VIRTUAL_HOST=api.${DEDOTRADER_DOMAIN}
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=api.${DEDOTRADER_DOMAIN}
-      - LOG_VERBOSE_LEVEL=debug
+      - LOG_LEVEL=debug
+      - LOG_FOLDER=/var/log/dedotrader
       - PORT=3000
       - MONGODB_URL=mongodb://mongo:27017/dedotrader
       - REDIS_URL=redis://redis:6379
@@ -24,6 +45,8 @@ services:
       - AWS_REGION=eu-central-1
       - MAIL_FROM=${EMAIL_FROM}
       - MAIL_BCC=${EMAIL_BCC}
+    volumes:
+      - /opt/dedotrader/server:/var/log/dedotrader
     depends_on:
       - mongo
       - redis
