@@ -3,6 +3,7 @@ name: dedotrader
 
 services:
   coint:
+    restart: always
     image: spv99build/dedotrader-coint:latest
     environment:
       - LOG_LEVEL=debug
