@@ -2,6 +2,18 @@ version: "3.9"
 name: dedotrader
 
 services:
+  coint:
+    image: spv99build/dedotrader-coint:latest
+    environment:
+      - LOG_LEVEL=debug
+      - LOG_FOLDER=/var/log/coint
+      - MONGODB_URL=mongodb://mongo:27017/dedotrader
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - dedotrader
+
   datafeed:
     restart: always
     image: spv99build/dedotrader-datafeed:latest
