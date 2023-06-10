@@ -27,7 +27,8 @@ services:
       - HISTORY_START_DATE=2023-01-01
       - WORK_FOLDER=/tmp/dedotrader/datafeed
       - COINTEGRATION_PRICE_INTERVAL=1d
-      - COINTEGRATION_PRICE_HISTORY_DAYS=120      
+      - COINTEGRATION_PRICE_HISTORY_DAYS=120
+      - COINTEGRATION_SCORE_THRESHOLD=0.8
       - DEBUG=${DEBUG}
     volumes:
       - /opt/dedotrader/datafeed:/var/log/dedotrader
