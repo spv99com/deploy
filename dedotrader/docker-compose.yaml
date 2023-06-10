@@ -24,6 +24,9 @@ services:
       - PORT=3000
       - MONGODB_URL=mongodb://mongo:27017/dedotrader
       - REDIS_URL=redis://redis:6379/2
+      - INTERVALS_TO_LOAD=15m,1h,4h,8h,1d
+      - HISTORY_START_DATE=2023-01-01
+      - WORK_FOLDER=/tmp/dedotrader/datafeed
       - DEBUG=${DEBUG}
     volumes:
       - /opt/dedotrader/datafeed:/var/log/dedotrader
