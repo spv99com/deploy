@@ -9,6 +9,7 @@ services:
       - LOG_LEVEL=debug
       - LOG_FOLDER=/var/log/coint
       - REDIS_URL=redis://redis:6379
+      - WORKER_COUNT=4
     depends_on:
       - redis
     networks:
