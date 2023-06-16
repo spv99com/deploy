@@ -6,7 +6,7 @@ services:
     restart: always
     image: spv99build/dedotrader-svc-coint:latest
     environment:
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=info
       - LOG_FOLDER=/var/log/coint
       - REDIS_URL=redis://redis:6379
       - WORKER_COUNT=4
@@ -19,9 +19,8 @@ services:
     restart: always
     image: spv99build/dedotrader-datafeed:latest
     environment:
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=info
       - LOG_FOLDER=/var/log/dedotrader
-      - PORT=3000
       - MONGODB_URL=mongodb://mongo:27017/dedotrader
       - REDIS_URL=redis://redis:6379
       - INTERVALS_TO_LOAD=15m,1h,4h,8h,1d
@@ -46,7 +45,7 @@ services:
       - VIRTUAL_HOST=api.${DEDOTRADER_DOMAIN}
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=api.${DEDOTRADER_DOMAIN}
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=info
       - LOG_FOLDER=/var/log/dedotrader
       - PORT=3000
       - MONGODB_URL=mongodb://mongo:27017/dedotrader
