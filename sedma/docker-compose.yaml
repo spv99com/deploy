@@ -11,7 +11,7 @@ services:
       - LETSENCRYPT_HOST=api.sedma.spv99.com
       - CLIENT_APP_URL=https://sedma.spv99.com
     depends_on:
-      - mongo
+      - redis  
     networks:
       - sedma
       - proxy-net
@@ -32,6 +32,19 @@ services:
       - 80
     networks:
       - proxy-net
+
+  redis:
+    restart: always
+    image: redis:7
+    networks:
+      sedma:
+        aliases:
+          - redis
+
+    expose:
+      - 6379
+    ports:
+      - 6379:6379 # used only for debug purpose, not needed for anything else
 
 networks:
   sedma:
