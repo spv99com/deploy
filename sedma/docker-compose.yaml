@@ -44,7 +44,7 @@ services:
     expose:
       - 6379
     ports:
-      - 6379:6379 # used only for debug purpose, not needed for anything else
+      - 6380:6379 # used only for debug purpose, not needed for anything else
 
 networks:
   sedma:
