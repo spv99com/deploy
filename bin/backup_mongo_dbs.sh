@@ -9,7 +9,7 @@ sudo=/usr/bin/sudo
 backup_mongo_db(){
   local db_name=$1
   local dt=$(date '+%Y-%m-%d_%H-%M-%S')
-  $sudo $docker container exec -i -t $container mongodump --db=${db_name} --gzip --archive=/backup/mongo_${db_name}_${dt}.tar.gz -v
+  $sudo $docker container exec -i -t $container mongodump --db=${db_name} --gzip --archive=/backup/mongo_${db_name}_${dt}.dump.gz -v
 }
 
 get_dbs(){
