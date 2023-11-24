@@ -32,25 +32,9 @@ services:
       - DEFAULT_EMAIL=admin@spv99.com #email to receive notifications from letsencrypt.org
       - NGINX_PROXY_CONTAINER=proxy #name of nginx-proxy container
 
-  mongo:
-    image: mongo:6.0.5
-    volumes:
-      - type: volume
-        source: mongodata
-        target: /data/db
-    expose:
-      - 27017
-    ports:
-      - 37017:27017 # used only for debug purpose, not needed for anything else
-    networks:
-      - mongo-net
-
 networks:
   proxy-net:
     name: proxy-net
-    external: true
-  mongo-net:
-    name: mongo-net
     external: true
 
 volumes:
@@ -58,8 +42,4 @@ volumes:
   vhost:
   html:
   acme:      
-  mongodata:
-    driver: local
-    driver_opts:
-      type: ext4
-      device: /dev/disk/by-id/scsi-0HC_Volume_100109400
+

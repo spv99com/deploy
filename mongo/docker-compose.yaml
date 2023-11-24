@@ -1,0 +1,31 @@
+version: '3.9'
+name: srv
+
+services:
+  mongo:
+    image: mongo:6.0.11
+    volumes:
+      - type: volume
+        source: mongo_data
+        target: /data/db
+      - type: bind
+        source: /mnt/backup_mongo
+        target: /backup
+
+    expose:
+      - 27017
+    ports:
+      - 37017:27017 # used only for debug purpose, not needed for anything else
+    networks:
+      - mongo-net
+
+networks:
+  mongo-net:
+    name: mongo-net
+    external: true
+
+volumes:
+  mongo_data:
+    name: mongo_data
+    external: true
+
