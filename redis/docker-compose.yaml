@@ -1,0 +1,23 @@
+version: '3.9'
+name: redis
+
+services:
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+    expose:
+      - 6379
+    ports:
+      - 16379:6379 # used only for debug purpose, not needed for anything else
+    networks:
+      - redis-net
+
+networks:
+  redis-net:
+    name: redis-net
+    external: true
+
+volumes:
+  redis_data:
+    external: true

@@ -3,7 +3,10 @@ name: srv
 
 services:
   mongo:
-    image: mongo:6.0.11
+    image: mongo:6.0.14
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     volumes:
       - type: volume
         source: mongo_data
@@ -28,4 +31,3 @@ volumes:
   mongo_data:
     name: mongo_data
     external: true
-
