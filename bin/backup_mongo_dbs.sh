@@ -20,7 +20,7 @@ backup_mongo_db(){
 }
 
 get_dbs(){
-  $sudo $docker container exec -i -t $MONGO_CONTAINER mongosh "$dburi" --quiet --eval 'db.getMongo().getDBNames().forEach(b=>print(b))'
+  $sudo $docker container exec -i -t $MONGO_CONTAINER mongosh "$DB_URL" --quiet --eval 'db.getMongo().getDBNames().forEach(b=>print(b))'
 }
 
 dbs=`get_dbs`
